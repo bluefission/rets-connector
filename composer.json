@@ -1,0 +1,20 @@
+{
+	"name": "bluefission/connector",
+	"description": "Connect wordpress to an authorized IDX feed",
+	"keywords": ["wordpress", "plugin", "rets", "real estate"],
+	"homepage": "http://bluefission.com",
+	"license": "MIT",
+	"authors": [
+	{
+	  "name": "Devon Scott",
+	  "email": "dscott@bluefission.com",
+	  "homepage": "http://bluefission.com"
+	}
+	],
+    "type": "wordpress-plugin",
+    "require": {
+    	"php": ">=5.3.2",
+    	"troydavisson/phrets": "2.*",
+        "composer/installers": "v1.0.6"
+    }
+}
