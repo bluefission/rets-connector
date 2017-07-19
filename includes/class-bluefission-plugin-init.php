@@ -23,7 +23,7 @@ class BlueFission_Plugin_Init {
 	 */
 	const VERSION = '1.0.0';
 
-	protected $rets_connector = 'BlueFission Plugin';
+	protected $plugin_name = 'BlueFission Plugin';
 
 	protected $api_url = 'http://code.bluefission.com/wp/updates';
 
@@ -36,7 +36,6 @@ class BlueFission_Plugin_Init {
 	protected static $instances = array();
 
 	protected function __construct() {
-
 		$this->called_class = get_called_class();
 
 		$this->plugin_meta = array();
@@ -86,12 +85,12 @@ class BlueFission_Plugin_Init {
 	}
 
 	protected function generate_names() {
-		$rets_connector = $this->rets_connector;
+		$plugin_name = $this->plugin_name;
 
-		$this->plugin_meta['name'] = $rets_connector;
-		$this->plugin_meta['slug'] = strtolower( str_replace( " ", "-", $rets_connector ) );
+		$this->plugin_meta['name'] = $plugin_name;
+		$this->plugin_meta['slug'] = strtolower( str_replace( " ", "-", $plugin_name ) );
 		$this->plugin_meta['options'] = $this->plugin_meta['slug'].'-options';
-		$this->plugin_meta['class'] = str_replace( " ", "_", ucwords( $rets_connector ) );
+		$this->plugin_meta['class'] = str_replace( " ", "_", ucwords( $plugin_name ) );
 		$this->plugin_meta['class-file'] = 'class-'.$this->plugin_meta['slug'].'.php';
 		$this->plugin_meta['admin-class'] = $this->plugin_meta['class'] .'_Admin';
 		$this->plugin_meta['admin-class-file'] = 'class-'.$this->plugin_meta['slug'].'-admin.php';
@@ -109,7 +108,8 @@ class BlueFission_Plugin_Init {
 			register_deactivation_hook( $this->plugin_location, array( $this->plugin_meta['class'], 'deactivate' ) );
 		}
 
-		add_action( 'plugins_loaded', array( $this, 'init_controller' ) );
+		// add_action( 'plugins_loaded', array( $this, 'init_controller' ) );
+		$this->init_controller();
 	}
 
 	public function init_controller() {
@@ -120,15 +120,17 @@ class BlueFission_Plugin_Init {
 	}
 
 	protected function load_admin() {
+		die("hello");
 		if ( is_admin() && ( !$this->plugin_ajax || ( !defined( 'DOING_AJAX' ) || !DOING_AJAX ) ) ) {
-
+			die('is admin');
 			if ( !class_exists( $this->plugin_meta['admin-class'] ) ) {
 				if ( file_exists( plugin_dir_path( $this->plugin_location ) . 'admin/'.$this->plugin_meta['admin-class-file'] ) ) {
 					require_once( plugin_dir_path( $this->plugin_location ) . 'admin/'.$this->plugin_meta['admin-class-file'] );
 				}
 			}
 
-			add_action( 'plugins_loaded', array( $this, 'init_admin' ) );
+			// add_action( 'plugins_loaded', array( $this, 'init_admin' ) );
+			$this->init_admin();
 		}
 	}
 

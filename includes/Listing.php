@@ -1,30 +1,77 @@
 <?php 
-namespace RetsConnector;
+namespace BlueFission\Rets;
 
 use BlueFission\Net\HTTP;
 use BlueFission\DevString;
 use BlueFission\HTML\Template;
+use BlueFission\Wordpress\WPUpdateable;
 
 require_once ( plugin_dir_path( __FILE__ ) . 'WPUpdateable.php' );
-require_once ( plugin_dir_path( __FILE__ ) . 'RSVP.php' );
-require_once ( plugin_dir_path( __FILE__ ) . 'Theme.php' );
 
 class Listing extends WPUpdateable {
 	const CONFIG_META = '_listing_data';
 
+	private $_idx_data;
+	private $_mapping;
+
 	protected $_config = array(
 	);
 
+	protected $_labels = array(
+		'Street Number',
+		'Street Name',
+		'Street Direction',
+		'Street Suffix',
+		'City',
+		'State',
+		'Zip',
+		'Price',
+		'SQFT',
+		'Beds',
+		'Full Baths',
+		'Half Baths',
+		'Description',
+		'Listing Status',
+		'Days On Market',
+		'MLS ID',
+		'City State & Zip',
+		'County',
+		'Subdivision',
+		'Year Built',
+		'Price Per SqFt',
+		'Elementary School',
+		'Middle School',
+		'High School',
+		'HOA',
+		'HOA Includes',
+		'Building Style',
+		'Location/Features',
+		'Construction',
+		'Exterior Finish',
+		'Sub/Roof/Attic',
+		'Heating Source',
+		'Cooling Source',
+		'Extras',
+		'Outdoor Features',
+		'Lot Dimensions',
+		'Lot Size (in acres)',
+		'Listed by (agent)',
+		'Listed by (company)',
+		'Title',
+		'Address',
+	);
+
 	protected $_data = array(
-		'address'=>'',
-		'title'=>'',
-		'description'=>'',
-		'price'=>'',
-		'sqft'=>'',
+		'mls_id'=>''
 	);
 	
 	public function load() {
 		// Get this card to also load in related gravity form data
+		foreach ($this->_labels as $label) {
+			$key = $this->formatAsKey($label);
+			$this->_data[$key] = '';
+		}
+
 		if ( parent::load() ) {
 
 			// $config_meta = self::CONFIG_META;
@@ -43,15 +90,83 @@ class Listing extends WPUpdateable {
 		}
 	}
 
-	private function prepare() {
-		// Generate Address
+	public function value($string) {
+		return $this->field($this->formatAsKey($string));
+	}
+
+	public function title() {
+		$string = $this;
+	} 
+
+	public function prepare() {
 		// Place mapping here
+		
+
+		foreach ($this->_mapping as $map=>$source) {
+			$field = $this->formatAsKey($map);
+			if ($source) {
+				$this->$field = $this->_idx_data[$source];
+			}
+		}
+
+		// Generate Address
+		$this->title = $this->street_number.' '.$this->street_name.' '.$this->street_direction.' '.$this->city.' '.$this->state.' '.$this->zip;
+	}
+
+	public function mapping($mapping) {
+		$this->_mapping = $mapping;
+	}
+
+	public function set($data) {
+		$this->_idx_data = $data;
+		$this->prepare();
 	}
 
 	public function save() {
+
+		$args = array(
+		   'meta_query' => array(
+		       array(
+		           'key' => 'mls_id',
+		           'value' => $this->mls_id,
+		           'compare' => '=',
+		       )
+		   )
+		);
+		$query = new \WP_Query($args);
+		if ( $query->have_posts() ) {
+			// The 2nd Loop
+			while ( $query->have_posts() ) {
+				$query->the_post();
+				// echo '<li>' . get_the_title( $query->post->ID ) . '</li>';
+				$this->_post_id = $query->post->ID;
+			}
+
+			// Restore original Post Data
+			wp_reset_postdata();
+		}
+
+		if ( !$this->_post_id ) {
+			$post = array(
+				'post_title'    => wp_strip_all_tags( $this->title ),
+				'post_content'  => $this->description,
+				'post_status'   => 'publish',
+				'post_author'   => 1,
+				'post_type'=>'listing',
+			);
+			$this->_post_id = wp_insert_post($post);
+		} else {
+			$post = array(
+				'ID'			=> $this->_post_id,
+				'post_title'    => wp_strip_all_tags( $this->title ),
+				'post_content'  => $this->description . '...',
+			);
+			$error = wp_update_post($post, true);
+		}
+
 		$status = parent::save();
 
-		$status = update_post_meta($this->_post_id, self::CONFIG_META, $this->_config);
+		// $status = update_post_meta($this->_post_id, self::CONFIG_META, $this->_config);
 
 		return $status;
 	}

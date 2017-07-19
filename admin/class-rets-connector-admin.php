@@ -54,44 +54,78 @@ class Rets_Connector_Admin extends BlueFission_Plugin_Admin {
 		 * Read more about actions and filters:
 		 * http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
 		 */
-		add_filter( 'default_content', array( $this, 'prepare_new_content' ), 10, 2 );
+		// add_filter( 'default_content', array( $this, 'prepare_new_content' ), 10, 2 );
 
-		add_action( 'save_post', array($this, 'add_post_fields'), 10, 2 );
-		add_action( 'pre_get_posts', array( $this, 'custom_post_order') );
+		// add_action( 'save_post', array($this, 'add_post_fields'), 10, 2 );
+		// add_action( 'pre_get_posts', array( $this, 'custom_post_order') );
 
-		add_action( "manage_{$this->plugin_slug}_posts_custom_column", array( $this, 'custom_columns') );
-		add_filter( "manage_edit-{$this->plugin_slug}_columns", array( $this, 'edit_columns') );
+		// add_action( "manage_{$this->plugin_slug}_posts_custom_column", array( $this, 'custom_columns') );
+		// add_filter( "manage_edit-{$this->plugin_slug}_columns", array( $this, 'edit_columns') );
 
 
-		add_action( 'TODO', array( $this, 'action_method_name' ) );
-		add_filter( 'TODO', array( $this, 'filter_method_name' ) );
+		// add_action( 'TODO', array( $this, 'action_method_name' ) );
+		// add_filter( 'TODO', array( $this, 'filter_method_name' ) );
 	}
 
 
 	public function plugin_admin_init() {
 		register_setting( $this->plugin_slug . '-options', $this->option_var, array($this, 'plugin_admin_validate') );
 		add_settings_section($this->plugin_slug . '-main', static::$plugin_init->plugin_info('name').' Settings', array($this, 'plugin_admin_section_text'), $this->plugin_slug);
-		add_settings_field('plugin_admin_setting_1', 'Setting One', array($this, 'plugin_admin_field_0'), $this->plugin_slug, $this->plugin_slug . '-main');
-		add_settings_field('plugin_admin_setting_2', 'Setting Two', array($this, 'plugin_admin_field_1'), $this->plugin_slug, $this->plugin_slug . '-main');
+		add_settings_field('bfrc_url', 'URL', array($this, 'plugin_admin_field_url'), $this->plugin_slug, $this->plugin_slug . '-main');
+		add_settings_field('bfrc_username', 'Username', array($this, 'plugin_admin_field_username'), $this->plugin_slug, $this->plugin_slug . '-main');
+		add_settings_field('bfrc_password', 'Password', array($this, 'plugin_admin_field_password'), $this->plugin_slug, $this->plugin_slug . '-main');
+
+		add_settings_field('bfrc_listing_template', 'Listing Template', array($this, 'plugin_admin_field_listing_template'), $this->plugin_slug, $this->plugin_slug . '-main');
+		add_settings_field('bfrc_display_template', 'Display Template', array($this, 'plugin_admin_field_display_template'), $this->plugin_slug, $this->plugin_slug . '-main');
+		add_settings_field('bfrc_mapping', 'Field Map', array($this, 'plugin_admin_field_mapping'), $this->plugin_slug, $this->plugin_slug . '-main');
+
 	}
 
-	public function plugin_admin_field_0() {
+	public function plugin_admin_field_url() {
 		$options = get_option($this->option_var);
-		$var = $options['var1'];
+		$var = $options['bfrc_url'];
 		
-		echo "<input id='plugin_admin_include_directory' name='" . $this->option_var . "[var2]' type='text' value='{$var}' />";	
+		echo "<input id='rets_connector_url' style='width:350px;' name='" . $this->option_var . "[bfrc_url]' type='text' value='{$var}' />";	
 	}
 	
-	public function plugin_admin_field_1() {
+	public function plugin_admin_field_username() {
 		$options = get_option($this->option_var);
-		$var = $options['var2'];
+		$var = $options['bfrc_username'];
 		
-		echo "<textarea id='plugin_admin_file_filter' name='" . $this->option_var . "[var2]'>{$var}</textarea>";	
+		echo "<input id='rets_connector_username' style='width:350px;' name='" . $this->option_var . "[bfrc_username]' type='text' value='{$var}' />";	
+	}
+	
+	public function plugin_admin_field_password() {
+		$options = get_option($this->option_var);
+		$var = $options['bfrc_password'];
+		
+		echo "<input id='rets_connector_password' style='width:350px;' name='" . $this->option_var . "[bfrc_password]' type='text' value='{$var}' />";	
+	}
+	
+	public function plugin_admin_field_listing_template() {
+		$options = get_option($this->option_var);
+		$var = $options['bfrc_listing_template'];
+		
+		echo "<textarea id='rets_connector_listing_template' style='width:100%;height:350px;' name='" . $this->option_var . "[bfrc_listing_template]'>{$var}</textarea>";	
+	}
+
+	public function plugin_admin_field_display_template() {
+		$options = get_option($this->option_var);
+		$var = $options['bfrc_display_template'];
+		
+		echo "<textarea id='rets_connector_display_template' style='width:100%;height:350px;' name='" . $this->option_var . "[bfrc_display_template]'>{$var}</textarea>";	
+	}
+
+	public function plugin_admin_field_mapping() {
+		$options = get_option($this->option_var);
+		$var = $options['bfrc_mapping'];
+		
+		echo "<textarea id='rets_connector_mapping' style='width:350px;height:350px;' name='" . $this->option_var . "[bfrc_mapping]'>{$var}</textarea>";	
 	}
 
 	// validate our options
 	public function plugin_admin_validate($input) {
-		
+	/*		
 		if( $input['var1'] == '' ) {
 			$input['var1'] = '';
 		}
@@ -99,6 +133,7 @@ class Rets_Connector_Admin extends BlueFission_Plugin_Admin {
 		if( $input['var2'] == '' ) {
 			$input['var2'] = '';
 		}
+		*/
 		return $input;
 	}
 

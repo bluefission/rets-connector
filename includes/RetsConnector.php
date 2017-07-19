@@ -1,7 +1,14 @@
 <?php
+namespace BlueFission\Rets;
+
 class RetsConnector {
 
     private $connection;
+
+
+    protected $_table_meta = array();
+    protected $_system_meta = array();
+    protected $_class_meta = array();
 
     public function connect( $url, $username, $password ) {
         $phretsconfig = new \PHRETS\Configuration();
@@ -31,7 +38,7 @@ class RetsConnector {
         }
 
         try {
-            $metadata = $this->getSystemMeta();
+            $metadata = $mgr->GetSystemMetaData();
         } catch (\Exception $e) {
             $metadata = array();
         }
@@ -40,7 +47,7 @@ class RetsConnector {
     }
 
     public function search ( $resource, $class, $query, $settings = array( "Limit" => 10, "Offset" => 0 ) ) {
-        $results = $connection->Search($resource, $class, $query, $settings);
+        $results = $this->connection->Search($resource, $class, $query, $settings);
 
         return $results;
     }
@@ -51,6 +58,11 @@ class RetsConnector {
         $offset = 0;
         $maxrows = 0;
         $objects = array();
+
+        $resource = 'Property';
+        $class = 'A';
+        $query = '(LIST_15=|1AQXFJ7CUYMN,1AQXFJ7CX75K)';
+
         do {
             try {
                 
@@ -73,20 +85,9 @@ class RetsConnector {
             
             if ($results) {
                 foreach ($results as $record) {
-                    if ($no_map) {
-                        // die(var_dump($record->toArray()));
-                        return $record->toArray();
-                    }
-                    $object = $mapper( $record->toArray() );
                     
-                    if ( isset($setting->table) && !isset($object['coll_name'])) {
-                        $object['coll_name'] = $setting->table;
-                    }
-
-                    $object = $this->prepare($object);
-
-                    if (isset($object['address']))
-                        $object = $this->prep_seo($object);
+                    $object = $record->toArray();
+                    
                     $objects[] = $object;
                 }
                 $status = 'Success';

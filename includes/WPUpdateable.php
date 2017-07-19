@@ -1,5 +1,6 @@
 <?php 
-namespace OurCard;
+namespace BlueFission\Wordpress;
+
 use BlueFission\Behavioral\Configurable;
 use BlueFission\Behavioral\Behaviors\State;
 

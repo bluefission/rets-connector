@@ -70,7 +70,7 @@ class Rets_Connector extends BlueFission_Plugin {
 		add_action( 'init', array( $this, 'register_post_type' ) );
 
 		add_filter( 'the_content', array( $this, 'content' ), 12 );
-  		add_filter( 'get_the_content', array( $this, 'content' ), 12 );
+  // 		add_filter( 'get_the_content', array( $this, 'content' ), 12 );
   		
   		add_shortcode( 'bluefission_shortcode', array( $this, 'shortcode') );
 
@@ -83,6 +83,8 @@ class Rets_Connector extends BlueFission_Plugin {
 			'foo' => 'something',
 			'bar' => 'something else',
 		), $atts );
+
+		$this->load_properties();
 
 		$content = "Magical Shortcode!";
 
@@ -115,9 +117,9 @@ class Rets_Connector extends BlueFission_Plugin {
 			'capability_type' => 'post',
 			'hierarchical' => false,
 			'rewrite' => array('slug' => 'listings'),
-			'supports' => array('title', 'editor', 'thumbnail')
+			'supports' => array('title', 'editor', 'thumbnail', 'custom-fields')
 		);
-		register_post_type( $this->plugin_slug, $args );
+		register_post_type( 'listing', $args );
 		/*
 		register_taxonomy($this->plugin_slug.'-category',
 			$this->plugin_slug,
@@ -146,24 +148,42 @@ class Rets_Connector extends BlueFission_Plugin {
 	}
 
 	public function load_properties() {
-		$connector = new RetsConnector();
+		$option_var =  $this->init->plugin_info('options');
+		$options = get_option($option_var);
 
+		$url = $options['bfrc_url'];
+		$username = $options['bfrc_username'];
+		$password = $options['bfrc_password'];
+		$mapping = $options['bfrc_mapping'];
+
+		$map_r = explode("\n", $mapping);
+
+		$final_map = array();
+
+		foreach ($map_r as $map) {
+			$values = explode(":", $map);
+			$final_map[trim($values[0])] = isset($values[1]) ? trim($values[1]) : null;
+		}
+		$connector = new BlueFission\Rets\RetsConnector();
 		$connector->connect($url, $username, $password);
 		$listings = $connector->properties();
 		foreach ($listings as $listing) {
-			$post = array(
-				'post_title'    => wp_strip_all_tags( $_POST['post_title'] ),
-				'post_content'  => ,
-				'post_status'   => 'publish',
-				'post_author'   => 1,
-			}
-			$id = wp_insert_post($post);
-
-			$data = RetsConnector\Listing();
-			$data->setID($id);
+			
+			$data = new BlueFission\Rets\Listing();
+			$data->mapping($final_map);
 			$data->set($listing);
 			$data->save();
+			die();
 		}
+	}
+
+	public function content($content) {
+		$post_type = get_post_type();
+		if ( $post_type == 'listing') {
+			include( plugin_dir_path( __FILE__ ) . 'views/display.php');
+		}
+
+		return $content;
 	}
 
 	/**
