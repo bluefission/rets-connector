@@ -158,6 +158,7 @@ class Rets_Connector extends BlueFission_Plugin {
 				$data->load();
 				$theme->set($data->get_data());
 				$content = $theme->render();
+				$content = do_shortcode($content);
 				break;
 			}
 
@@ -264,6 +265,7 @@ class Rets_Connector extends BlueFission_Plugin {
 			$data->load();
 			$theme->set($data->get_data());
 			$content = $theme->render();
+			$content = do_shortcode($content);
 		}
 
 		return $content;
