@@ -203,12 +203,10 @@ class Rets_Connector extends BlueFission_Plugin {
 		$connector->connect($url, $username, $password);
 		$listings = $connector->properties();
 		foreach ($listings as $listing) {
-			
 			$data = new BlueFission\Rets\Listing();
 			$data->mapping($final_map);
 			$data->set($listing);
 			$data->save();
-			die();
 		}
 	}
 
@@ -216,6 +214,14 @@ class Rets_Connector extends BlueFission_Plugin {
 		$post_type = get_post_type();
 		if ( $post_type == 'listing') {
 			include( plugin_dir_path( __FILE__ ) . 'views/display.php');
+			// $content = $template;
+			$theme = new \BlueFission\HTML\Template();
+			$theme->contents($template);
+			$data = new BlueFission\Rets\Listing();
+			$data->setID();
+			$data->load();
+			$theme->set($data->get_data());
+			$content = $theme->render();
 		}
 
 		return $content;

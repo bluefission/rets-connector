@@ -34,7 +34,6 @@ class Listing extends WPUpdateable {
 		'Listing Status',
 		'Days On Market',
 		'MLS ID',
-		'City State & Zip',
 		'County',
 		'Subdivision',
 		'Year Built',
