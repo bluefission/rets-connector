@@ -74,6 +74,7 @@ class Rets_Connector extends BlueFission_Plugin {
   		
   		add_shortcode( 'bluefission_shortcode', array( $this, 'shortcode') );
   		add_shortcode( 'rets_custom_list', array( $this, 'custom_list') );
+  		add_shortcode( 'rets_show_property', array( $this, 'custom_list') );
 
 		add_action( 'TODO', array( $this, 'action_method_name' ) );
 		add_filter( 'TODO', array( $this, 'filter_method_name' ) );
@@ -117,6 +118,47 @@ class Rets_Connector extends BlueFission_Plugin {
 				// echo '<li>' . get_the_title( $query->post->ID ) . '</li>';
 				$content .= "Place listing.php output here";
 				$this->_post_id = $query->post->ID;
+			}
+
+			// Restore original Post Data
+			wp_reset_postdata();
+		}
+
+		return $content;
+	}
+
+	public function show_property( $atts ) {
+		$a = shortcode_atts( array(
+			'field' => 'mls_id',
+			'value' => '1000000',
+		), $atts );
+
+		// $this->load_properties();
+		$content = "";
+		$args = array(
+		   'meta_query' => array(
+		       array(
+		           'key' => $shortcode_atts['mls_id'],
+		           'value' => $shortcode_atts['value'],
+		           'compare' => '=',
+		       )
+		   )
+		);
+		$query = new \WP_Query($args);
+		if ( $query->have_posts() ) {
+			// The 2nd Loop
+			while ( $query->have_posts() ) {
+				$query->the_post();
+				// echo '<li>' . get_the_title( $query->post->ID ) . '</li>';
+				$this->_post_id = $query->post->ID;
+				$theme = new \BlueFission\HTML\Template();
+				$theme->contents($template);
+				$data = new BlueFission\Rets\Listing();
+				$data->setID( $query->post->ID);
+				$data->load();
+				$theme->set($data->get_data());
+				$content = $theme->render();
+				break;
 			}
 
 			// Restore original Post Data
