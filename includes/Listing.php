@@ -122,7 +122,8 @@ class Listing extends WPUpdateable {
 	}
 
 	public function title() {
-		$string = $this;
+		$string = $this->street_number.' '.$this->street_name.' '.$this->street_direction.' '.$this->city.' '.$this->state.' '.$this->zip;
+		return $string;
 	} 
 
 	public function prepare() {
@@ -138,6 +139,7 @@ class Listing extends WPUpdateable {
 
 		// Generate Address
 		$this->title = $this->street_number.' '.$this->street_name.' '.$this->street_direction.' '.$this->city.' '.$this->state.' '.$this->zip;
+		$this->photos = array();
 	}
 
 	public function mapping($mapping) {
