@@ -254,6 +254,7 @@ class Rets_Connector extends BlueFission_Plugin {
 			foreach ($images as $image) {
 				$photos[] = $image->getLocation();
 			}
+			die(var_dump($photos));
 			$data->photos = $photos;
 			$data->save();
 		}
