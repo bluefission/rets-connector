@@ -87,7 +87,7 @@ class RetsConnector {
                 foreach ($results as $record) {
                     
                     $object = $record->toArray();
-                    
+
                     $objects[] = $object;
                 }
                 $status = 'Success';
