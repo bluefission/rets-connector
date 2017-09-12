@@ -106,11 +106,11 @@ class RetsConnector {
         $results = false;
         try {
 
-            $results = $this->connection->GetObject('Property', 'Photo', $id, "*", 1 );
+            $results = $this->connection->GetObject('Property', 'HiRes', $id, "*", 1 );
 
             if (!is_object($results[0]) || (strpos($results[0]->getContentType(), 'text/xml') !== false && strpos($results[0]->getContent(), '20409') !== false) ) {
                 
-                $results = $this->connection->GetObject('Property', 'Photo', $id);
+                $results = $this->connection->GetObject('Property', 'HiRes', $id);
             }
         } catch ( \Exception $e ) {
             echo "Failed to get image, {$e->getMessage()}";
