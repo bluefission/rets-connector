@@ -76,6 +76,8 @@ class Rets_Connector extends BlueFission_Plugin {
   		add_shortcode( 'rets_custom_list', array( $this, 'custom_list') );
   		add_shortcode( 'rets_show_property', array( $this, 'custom_list') );
 
+  		add_action( 'update_rets_listings', array( $this, 'auto_load_properties' ) );
+
 		add_action( 'TODO', array( $this, 'action_method_name' ) );
 		add_filter( 'TODO', array( $this, 'filter_method_name' ) );
 	}
@@ -223,6 +225,10 @@ class Rets_Connector extends BlueFission_Plugin {
 			)
 		);
 		*/
+	}
+
+	public function auto_load_properties() {
+		$this->load_properties();
 	}
 
 	public function load_properties() {
