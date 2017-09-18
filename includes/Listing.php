@@ -92,6 +92,28 @@ class Listing extends WPUpdateable {
 		'photos'=>''
 	);
 	
+	public function get_by_mls_id( $mls_id = null) {
+		$this->mls_id = $mls_id ? $mls_id : $this->mls_id;
+		$args = array(
+			'post_type' => 'payment',
+			'meta_query' => array(
+		        array(
+		            'key' => 'mls_id',
+		            'value' => $this->mls_id,
+		            'compare' => 'LIKE'
+		        )
+			)
+		);
+		query_posts($args);
+		while (have_posts()) {
+			the_post();
+			$this->_post_id = get_the_ID();
+			break;
+		}
+
+		$load();
+	}
+
 	public function load() {
 		// Get this card to also load in related gravity form data
 		foreach ($this->_labels as $label) {

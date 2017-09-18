@@ -255,6 +255,7 @@ class Rets_Connector extends BlueFission_Plugin {
 			$data = new BlueFission\Rets\Listing();
 			$data->mapping($final_map);
 			$data->set($listing);
+			$data->get_by_mls_id();
 			$images = $connector->media($data->mls_id);
 			$photos = array();
 			foreach ($images as $image) {
