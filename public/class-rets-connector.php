@@ -265,6 +265,33 @@ class Rets_Connector extends BlueFission_Plugin {
 			// die(var_dump($data->photos));
 			$data->save();
 		}
+		// create script up delete all listings not updated in past 24 hours
+		$this->remove_older_listings();
+	}
+
+	public function remove_older_listings() {
+		    // Display all post.
+
+		$args = array(
+		    'date_query' => array(
+		        array(
+		            'column' => 'post_modified_gmt',
+		            'before' => '2 days ago',
+		        ),
+		    ),
+		    'posts_per_page' => -1,
+		);
+		$the_query = new WP_Query( $args );
+
+		if ( $the_query->have_posts() ) {
+		  while ( $the_query->have_posts() ) {
+		  	$the_query->the_post();
+		    $id = get_the_ID ();
+		    wp_delete_post( $id );
+		  }
+		}
+
+		wp_reset_postdata();
 	}
 
 	public function content($content) {
