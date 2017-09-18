@@ -95,7 +95,7 @@ class Listing extends WPUpdateable {
 	public function get_by_mls_id( $mls_id = null) {
 		$this->mls_id = $mls_id ? $mls_id : $this->mls_id;
 		$args = array(
-			'post_type' => 'payment',
+			'post_type' => 'listing',
 			'meta_query' => array(
 		        array(
 		            'key' => 'mls_id',
@@ -111,7 +111,7 @@ class Listing extends WPUpdateable {
 			break;
 		}
 
-		$load();
+		$this->load();
 	}
 
 	public function load() {
