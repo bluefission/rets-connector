@@ -22,6 +22,7 @@ class Listing extends WPUpdateable {
 		'Street Name',
 		'Street Direction',
 		'Street Suffix',
+		'Unit Number',
 		'City',
 		'State',
 		'Zip',
@@ -82,6 +83,8 @@ class Listing extends WPUpdateable {
 		'Lot Size (in acres)',
 		'Agent ID',
 		'Office ID',
+		'Office Name',
+		'Listing Member Name',
 		'Title',
 		'Virtual Tour',
 		'Address',
@@ -122,7 +125,7 @@ class Listing extends WPUpdateable {
 	}
 
 	public function title() {
-		$string = $this->street_number.' '.$this->street_name.' '.$this->street_direction.' '.$this->city.' '.$this->state.' '.$this->zip;
+		$string = $this->street_number.' '.$this->street_direction.' '.$this->street_name.' '.$this->street_suffix.' '.$this->unit_number.' '.$this->city.' '.$this->state.' '.$this->zip;
 		return $string;
 	} 
 
@@ -138,7 +141,7 @@ class Listing extends WPUpdateable {
 		}
 
 		// Generate Address
-		$this->title = $this->street_number.' '.$this->street_name.' '.$this->street_direction.' '.$this->city.' '.$this->state.' '.$this->zip;
+		$this->title = $this->street_number.' '.$this->street_direction.' '.$this->street_name.' '.$this->street_suffix.' '.$this->unit_number.' '.$this->city.' '.$this->state.' '.$this->zip;
 		$this->photos = array();
 	}
 
