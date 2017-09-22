@@ -256,7 +256,7 @@ class Rets_Connector extends BlueFission_Plugin {
 			$data->mapping($final_map);
 			$data->set($listing);
 			$data->get_by_mls_id();
-			$data->set($listing);
+			$data->set($listing);	
 			$images = $connector->media($data->mls_id);
 			$photos = array();
 			foreach ($images as $image) {
@@ -292,6 +292,7 @@ class Rets_Connector extends BlueFission_Plugin {
 		  }
 		}
 
+		// This rewinds the pointer
 		wp_reset_postdata();
 	}
 
