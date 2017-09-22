@@ -95,6 +95,7 @@ class Listing extends WPUpdateable {
 		'photos'=>''
 	);
 	
+	// Load
 	public function load() {
 		// Get this card to also load in related gravity form data
 		foreach ($this->_labels as $label) {
