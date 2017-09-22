@@ -76,6 +76,8 @@ class Rets_Connector extends BlueFission_Plugin {
   		add_shortcode( 'rets_custom_list', array( $this, 'custom_list') );
   		add_shortcode( 'rets_show_property', array( $this, 'custom_list') );
 
+  		add_action( 'update_rets_listings', array( $this, 'auto_load_properties' ) );
+
 		add_action( 'TODO', array( $this, 'action_method_name' ) );
 		add_filter( 'TODO', array( $this, 'filter_method_name' ) );
 	}
@@ -225,6 +227,10 @@ class Rets_Connector extends BlueFission_Plugin {
 		*/
 	}
 
+	public function auto_load_properties() {
+		$this->load_properties();
+	}
+
 	public function load_properties() {
 		$option_var =  $this->init->plugin_info('options');
 		$options = get_option($option_var);
@@ -249,6 +255,8 @@ class Rets_Connector extends BlueFission_Plugin {
 			$data = new BlueFission\Rets\Listing();
 			$data->mapping($final_map);
 			$data->set($listing);
+			$data->get_by_mls_id();
+			$data->set($listing);	
 			$images = $connector->media($data->mls_id);
 			$photos = array();
 			foreach ($images as $image) {
@@ -258,6 +266,34 @@ class Rets_Connector extends BlueFission_Plugin {
 			// die(var_dump($data->photos));
 			$data->save();
 		}
+		// create script up delete all listings not updated in past 24 hours
+		$this->remove_older_listings();
+	}
+
+	public function remove_older_listings() {
+		    // Display all post.
+
+		$args = array(
+		    'date_query' => array(
+		        array(
+		            'column' => 'post_modified_gmt',
+		            'before' => '2 days ago',
+		        ),
+		    ),
+		    'posts_per_page' => -1,
+		);
+		$the_query = new WP_Query( $args );
+
+		if ( $the_query->have_posts() ) {
+		  while ( $the_query->have_posts() ) {
+		  	$the_query->the_post();
+		    $id = get_the_ID ();
+		    wp_delete_post( $id );
+		  }
+		}
+
+		// This rewinds the pointer
+		wp_reset_postdata();
 	}
 
 	public function content($content) {

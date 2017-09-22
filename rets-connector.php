@@ -30,4 +30,24 @@ function rets_connector() {
 	require_once( plugin_dir_path( __FILE__ ) . 'class-rets-connector-init.php');
 }
 
+register_activation_hook(__FILE__, 'rets_activation');
+register_deactivation_hook(__FILE__, 'rets_deactivation');
+
+function rets_activation() {
+    if (! wp_next_scheduled ( 'update_rets_listings' )) {
+		wp_schedule_event(time(), 'twicedaily', 'update_rets_listings');
+    }
+}
+
+function rets_deactivation() {
+   $timestamp = wp_next_scheduled( 'update_rets_listings' );
+   wp_unschedule_event( $timestamp, 'update_rets_listings' );
+}
+
+add_action('my_hourly_event', 'do_this_hourly');
+
+function do_this_hourly() {
+	// do something every hour
+}
+
 add_action( 'plugins_loaded', 'rets_connector' );
